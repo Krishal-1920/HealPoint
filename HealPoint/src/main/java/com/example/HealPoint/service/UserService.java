@@ -33,7 +33,6 @@ public class UserService {
 
     public UserModel signUp(UserModel userModel) {
         User addUser = userMapper.userModelToUser(userModel);
-
         addUser = userRepository.save(addUser);
 
         List<String> roleIdsFromModel = userModel.getRoles().stream().map(r -> r.getRoleId()).toList();
@@ -171,4 +170,5 @@ public class UserService {
 
         return updatedUserModel;
     }
+
 }
