@@ -20,5 +20,4 @@ public interface SlotsMapper {
 
     Slots updateSlotsModel(SlotsModel slotsModel,@MappingTarget Slots slots);
 
-
 }
