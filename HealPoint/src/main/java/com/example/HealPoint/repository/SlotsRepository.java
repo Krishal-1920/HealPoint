@@ -22,4 +22,5 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
             nativeQuery = true)
     List<Slots> searchSlots(@Param("search") String search);
 
+    List<Slots> findByUserUserId(String userId);
 }
