@@ -4,6 +4,8 @@ import com.example.HealPoint.enums.ItemCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "inventory")
@@ -42,5 +44,8 @@ public class Inventory {
         this.isAvailable = this.itemQuantity >= 1;
     }
 
+    // Mapping
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
+    private List<Cart> cart;
 
 }
