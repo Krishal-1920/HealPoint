@@ -18,7 +18,6 @@ public class CartController {
     public ResponseEntity<MessageModel> addProductToCart(@RequestParam String userId,
                                                          @RequestParam String itemId,
                                                          @RequestParam double quantity) {
-
         return ResponseEntity.ok(cartService.addToCart(userId, itemId, quantity));
     }
 

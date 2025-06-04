@@ -29,29 +29,30 @@ public class CartService {
         Inventory inventory = inventoryRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        if(quantity > inventory.getItemQuantity()){
+        if (quantity > inventory.getItemQuantity()) {
             throw new RuntimeException("Quantity not available");
         }
-        inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
 
+        inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
         inventoryRepository.save(inventory);
 
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cart.setInventory(inventory);
-        cart.setQuantity(quantity);
+        Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(userId, itemId);
+
+        if (cart != null) {
+            cart.setQuantity(cart.getQuantity() + quantity);
+        } else {
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setInventory(inventory);
+            cart.setQuantity(quantity);
+        }
 
         cartRepository.save(cart);
 
         MessageModel messageModel = new MessageModel();
-        messageModel.setMessage(cart.getQuantity() + " " + cart.getInventory().getProductName()  + " added to cart");
+        messageModel.setMessage(quantity + " " + inventory.getProductName() + " added to cart");
         return messageModel;
-
     }
-
-
-
-
 
 
 
