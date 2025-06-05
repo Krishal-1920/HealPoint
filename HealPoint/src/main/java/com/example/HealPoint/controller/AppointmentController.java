@@ -1,6 +1,5 @@
 package com.example.HealPoint.controller;
 
-import com.example.HealPoint.entity.Appointment;
 import com.example.HealPoint.model.AppointmentModel;
 import com.example.HealPoint.model.SlotBookingModel;
 import com.example.HealPoint.service.AppointmentService;

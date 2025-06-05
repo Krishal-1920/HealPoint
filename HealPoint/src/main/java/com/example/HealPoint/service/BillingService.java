@@ -27,6 +27,7 @@ public class BillingService {
 
     @Transactional
     public BillingModel generateBill(String userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -45,7 +46,7 @@ public class BillingService {
 
         for (Cart cart : cartItems) {
             Inventory inventory = cart.getInventory();
-            double productTotal = inventory.getItemPrice() * cart.getQuantity();
+            double itemTotal = inventory.getItemPrice() * cart.getQuantity();
 
             BillingItem billingItem = new BillingItem();
             billingItem.setBilling(billing);
@@ -58,10 +59,10 @@ public class BillingService {
             BillingItemsModel itemResponse = new BillingItemsModel();
             itemResponse.setProductName(inventory.getProductName());
             itemResponse.setProductQuantity(cart.getQuantity());
-            itemResponse.setTotalProductPrice(productTotal);
+            itemResponse.setTotalProductPrice(itemTotal);
             itemResponses.add(itemResponse);
 
-            totalAmount += productTotal;
+            totalAmount = totalAmount + itemTotal;
         }
 
         billing.setBillingItems(billingItemsList);
