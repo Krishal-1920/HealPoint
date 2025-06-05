@@ -52,4 +52,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Cart> cart;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Billing> billing;
+
 }
