@@ -21,5 +21,16 @@ public class CartController {
         return ResponseEntity.ok(cartService.addToCart(userId, itemId, quantity));
     }
 
+    @DeleteMapping("/removeFromCart")
+    public ResponseEntity<MessageModel> removeProductFromCart(@RequestParam String userId,
+                                                              @RequestParam String itemId,
+                                                              @RequestParam double quantity) {
+        return ResponseEntity.ok(cartService.removeFromCart(userId, itemId, quantity));
+    }
+
+    @GetMapping("/getCartItems")
+    public ResponseEntity<CartModel> getCartItems(@RequestParam String userId) {
+        return ResponseEntity.ok(cartService.getCartItems(userId));
+    }
 
 }
