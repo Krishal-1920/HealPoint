@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,24 +52,12 @@ public class BillingService {
         double totalAmount = 0;
 
         for (Cart cart : cartItems) {
-            Inventory inventory = cart.getInventory();
-            double itemTotal = inventory.getItemPrice() * cart.getQuantity();
+            BillingItem billingItem = billingMapper.updateToBillingItem(cart, billing);
+            BillingItemsModel itemResponse = billingMapper.cartToBillingItemsModel(cart);
 
-            BillingItem billingItem = new BillingItem();
-            billingItem.setBilling(billing);
-            billingItem.setInventory(inventory);
-            billingItem.setProductName(inventory.getProductName());
-            billingItem.setPriceAtPurchase(inventory.getItemPrice());
-            billingItem.setQuantity(cart.getQuantity());
             billingItemsList.add(billingItem);
-
-            BillingItemsModel itemResponse = new BillingItemsModel();
-            itemResponse.setProductName(inventory.getProductName());
-            itemResponse.setProductQuantity(cart.getQuantity());
-            itemResponse.setTotalProductPrice(itemTotal);
             itemResponses.add(itemResponse);
-
-            totalAmount = totalAmount + itemTotal;
+            totalAmount += itemResponse.getTotalProductPrice();
         }
 
         billing.setBillingItems(billingItemsList);
