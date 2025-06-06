@@ -26,10 +26,9 @@ public class CartService {
 
     private final CartRepository cartRepository;
 
-    public MessageModel addToCart(String userId, String itemId, double quantity) {
+    public MessageModel addToCart(String email, String itemId, double quantity) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
         Inventory inventory = inventoryRepository.findById(itemId)
                 .orElseThrow(() -> new DataNotFoundException("Item not found"));
@@ -41,7 +40,7 @@ public class CartService {
         inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
         inventoryRepository.save(inventory);
 
-        Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(userId, itemId);
+        Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(user.getUserId(), itemId);
 
         if (cart != null) {
             cart.setQuantity(cart.getQuantity() + quantity);
@@ -60,15 +59,14 @@ public class CartService {
     }
 
 
-    public MessageModel removeFromCart(String userId, String itemId, double quantity) {
+    public MessageModel removeFromCart(String email, String itemId, double quantity) {
 
-        User user = userRepository.findById(userId)
-               .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
         Inventory inventory = inventoryRepository.findById(itemId)
               .orElseThrow(() -> new DataNotFoundException("Item not found"));
 
-        Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(userId, itemId);
+        Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(user.getUserId(), itemId);
 
         if(quantity > cart.getQuantity()){
              throw new DataValidationException("Quantity not available");
@@ -85,11 +83,10 @@ public class CartService {
 
     }
 
-    public CartModel getCartItems(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+    public CartModel getCartItems(String email) {
+        User user = userRepository.findByEmail(email);
 
-        List<Cart> cart = cartRepository.findByUserUserId(userId);
+        List<Cart> cart = cartRepository.findByUserUserId(user.getUserId());
 
         List<ItemListModel> cartModelList = cart.stream().map(cart1 -> {
             ItemListModel itemListModel = new ItemListModel();
