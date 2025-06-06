@@ -3,6 +3,7 @@ package com.example.HealPoint.service;
 import com.example.HealPoint.entity.Slots;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.enums.Status;
+import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.mapper.SlotsMapper;
 import com.example.HealPoint.model.SlotsModel;
 import com.example.HealPoint.repository.SlotsRepository;
@@ -25,7 +26,7 @@ public class SlotsService {
 
     public SlotsModel createSlot(SlotsModel slotsModel) {
         User user = userRepository.findById(slotsModel.getProviderId())
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new DataNotFoundException("User Not Found"));
 
         Slots slot = slotMapper.slotsModelToSlots(slotsModel);
 
@@ -47,7 +48,7 @@ public class SlotsService {
 
     public String deleteSlot(String slotId) {
         Slots slot = slotsRepository.findById(slotId)
-               .orElseThrow(() -> new RuntimeException("Slot Not Found"));
+               .orElseThrow(() -> new DataNotFoundException("Slot Not Found"));
         slotsRepository.deleteById(slotId);
         return "Slot of Dr. " + slot.getProviderUsername() + " deleted Successfully";
     }
@@ -55,12 +56,12 @@ public class SlotsService {
 
     public SlotsModel updateSlot(String slotId, SlotsModel slotsModel) {
         Slots slots = slotsRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slots Not found"));
-
-        slotMapper.updateSlotsModel(slotsModel, slots);
+                .orElseThrow(() -> new DataNotFoundException("Slots Not found"));
 
         User user = userRepository.findById(slotsModel.getProviderId())
-                .orElseThrow(() -> new RuntimeException("User Not found"));
+                .orElseThrow(() -> new DataNotFoundException("User Not found"));
+
+        slotMapper.updateSlotsModel(slotsModel, slots);
 
         slots.setUser(user);
         slots.setProviderUsername(user.getUsername());

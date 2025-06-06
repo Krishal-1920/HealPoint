@@ -3,6 +3,8 @@ package com.example.HealPoint.service;
 import com.example.HealPoint.entity.Role;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.entity.UserRole;
+import com.example.HealPoint.exceptions.DataNotFoundException;
+import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.RoleMapper;
 import com.example.HealPoint.mapper.UserMapper;
 import com.example.HealPoint.model.RoleModel;
@@ -49,7 +51,7 @@ public class UserService {
         }
 
         if (!invalidRoles.isEmpty()) {
-            throw new RuntimeException("Invalid roles: " + invalidRoles);
+            throw new DataValidationException("Invalid roles: " + invalidRoles);
         }
 
         List<Role> saveRoles =roleInDb.stream().filter(r -> roleIdsFromModel.contains(r.getRoleId())).toList();
@@ -92,7 +94,7 @@ public class UserService {
     public UserModel updateUser(String userId, UserModel userModel) {
 
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
         userMapper.updateUserModel(userModel, existingUser);
         existingUser.setUserId(userId);
 
@@ -131,8 +133,8 @@ public class UserService {
 
         // Roles To Add
         List<String> nonAllocateRoleIds = incomingRoleIdsFromModel.stream()
-                .filter(roleId -> !existingRoleIds.contains(roleId))  // Compare incoming IDs against existing ones
-                .toList();  // Collect all matching roleIds into a list
+                .filter(roleId -> !existingRoleIds.contains(roleId))
+                .toList();
 
         List<String> invalidRoleIds = new ArrayList<>();
         if (!nonAllocateRoleIds.isEmpty()) {
@@ -144,7 +146,7 @@ public class UserService {
         }
 
         if (!invalidRoleIds.isEmpty()) {
-            throw new RuntimeException("Invalid Roles" + invalidRoleIds);
+            throw new DataValidationException("Invalid Roles" + invalidRoleIds);
         }
 
         List<Role> updatedRoles = roleInDb.stream().filter(rd -> nonAllocateRoleIds.contains(rd.getRoleId())).toList();

@@ -3,6 +3,8 @@ package com.example.HealPoint.service;
 import com.example.HealPoint.entity.Cart;
 import com.example.HealPoint.entity.Inventory;
 import com.example.HealPoint.entity.User;
+import com.example.HealPoint.exceptions.DataNotFoundException;
+import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.model.CartModel;
 import com.example.HealPoint.model.ItemListModel;
 import com.example.HealPoint.model.MessageModel;
@@ -27,13 +29,13 @@ public class CartService {
     public MessageModel addToCart(String userId, String itemId, double quantity) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Inventory inventory = inventoryRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new DataNotFoundException("Item not found"));
 
         if (quantity > inventory.getItemQuantity()) {
-            throw new RuntimeException("Quantity not available");
+            throw new DataValidationException("Quantity not available");
         }
 
         inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
@@ -61,15 +63,15 @@ public class CartService {
     public MessageModel removeFromCart(String userId, String itemId, double quantity) {
 
         User user = userRepository.findById(userId)
-               .orElseThrow(() -> new RuntimeException("User not found"));
+               .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Inventory inventory = inventoryRepository.findById(itemId)
-              .orElseThrow(() -> new RuntimeException("Item not found"));
+              .orElseThrow(() -> new DataNotFoundException("Item not found"));
 
         Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(userId, itemId);
 
         if(quantity > cart.getQuantity()){
-             throw new RuntimeException("Quantity not available");
+             throw new DataValidationException("Quantity not available");
         }
 
         cart.setQuantity(cart.getQuantity() - quantity);
@@ -85,7 +87,7 @@ public class CartService {
 
     public CartModel getCartItems(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         List<Cart> cart = cartRepository.findByUserUserId(userId);
 

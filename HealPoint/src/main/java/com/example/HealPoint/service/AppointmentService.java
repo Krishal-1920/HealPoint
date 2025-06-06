@@ -5,6 +5,8 @@ import com.example.HealPoint.entity.Slots;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.enums.BookingStatus;
 import com.example.HealPoint.enums.Status;
+import com.example.HealPoint.exceptions.DataNotFoundException;
+import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.AppointmentMapper;
 import com.example.HealPoint.mapper.SlotsMapper;
 import com.example.HealPoint.model.AppointmentModel;
@@ -41,13 +43,13 @@ public class AppointmentService {
     public AppointmentModel bookAnAppointment(String userId, String slotId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Slots slots = slotRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slot not found"));
+                .orElseThrow(() -> new DataNotFoundException("Slot not found"));
 
         if (slots.getStatus() == Status.BOOKED) {
-            throw new RuntimeException("Slot is already booked");
+            throw new DataValidationException("Slot is already booked");
         }
 
         slots.setStatus(Status.BOOKED);
@@ -67,13 +69,13 @@ public class AppointmentService {
 
     public AppointmentModel updateSlot(String userId, String slotId) {
         User user = userRepository.findById(userId)
-               .orElseThrow(() -> new RuntimeException("User not found"));
+               .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Slots slots = slotRepository.findById(slotId)
-              .orElseThrow(() -> new RuntimeException("Slot not found"));
+              .orElseThrow(() -> new DataNotFoundException("Slot not found"));
 
         if(slots.getStatus() == Status.AVAILABLE){
-            throw new RuntimeException("Slot is already available");
+            throw new DataValidationException("Slot is already available");
         }
 
         slots.setStatus(Status.AVAILABLE);

@@ -1,6 +1,8 @@
 package com.example.HealPoint.service;
 
 import com.example.HealPoint.entity.*;
+import com.example.HealPoint.exceptions.DataNotFoundException;
+import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.model.BillingItemsModel;
 import com.example.HealPoint.model.BillingModel;
 import com.example.HealPoint.repository.BillingRepository;
@@ -29,11 +31,11 @@ public class BillingService {
     public BillingModel generateBill(String userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         List<Cart> cartItems = cartRepository.findByUserUserId(userId);
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+            throw new DataValidationException("Cart is empty");
         }
 
         Billing billing = new Billing();

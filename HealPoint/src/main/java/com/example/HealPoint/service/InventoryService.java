@@ -1,6 +1,7 @@
 package com.example.HealPoint.service;
 
 import com.example.HealPoint.entity.Inventory;
+import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.mapper.InventoryMapper;
 import com.example.HealPoint.model.InventoryModel;
 import com.example.HealPoint.repository.InventoryRepository;
@@ -33,7 +34,7 @@ public class InventoryService {
 
     public InventoryModel updateProduct(String itemId, InventoryModel inventoryModel) {
         Inventory inventory = inventoryRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new DataNotFoundException("Product not found"));
 
         inventoryMapper.updateInventoryFromInventoryModel(inventoryModel, inventory);
         inventory.setItemId(itemId);
@@ -43,7 +44,7 @@ public class InventoryService {
 
     public String deleteProduct(String itemId) {
         Inventory inventory = inventoryRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new DataNotFoundException("Product not found"));
         inventoryRepository.delete(inventory);
         return "Product removed successfully";
     }
