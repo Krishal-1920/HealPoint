@@ -3,8 +3,11 @@ package com.example.HealPoint.service;
 import com.example.HealPoint.entity.*;
 import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.exceptions.DataValidationException;
+import com.example.HealPoint.mapper.BillingMapper;
 import com.example.HealPoint.model.BillingItemsModel;
 import com.example.HealPoint.model.BillingModel;
+import com.example.HealPoint.model.OrderHistoryDateModel;
+import com.example.HealPoint.model.OrderHistoryModel;
 import com.example.HealPoint.repository.BillingRepository;
 import com.example.HealPoint.repository.CartRepository;
 import com.example.HealPoint.repository.UserRepository;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,8 @@ public class BillingService {
     private final CartRepository cartRepository;
 
     private final BillingRepository billingRepository;
+
+    private final BillingMapper billingMapper;
 
 
     @Transactional
@@ -82,4 +88,67 @@ public class BillingService {
 
         return response;
     }
+
+    public OrderHistoryModel getOrderHistory(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        List<Billing> billingList = billingRepository.findByUserUserId(userId);
+
+        List<OrderHistoryDateModel> orderHistoryDateList = new ArrayList<>();
+
+        for (Billing billing : billingList) {
+            List<BillingItemsModel> billingItems = billing.getBillingItems().stream()
+                    .map(billingItem -> billingMapper.billingItemtoBillingItemsModel(billingItem))
+                    .toList();
+
+            OrderHistoryDateModel dateModel = new OrderHistoryDateModel();
+            dateModel.setBillDate(billing.getBillingDate());
+            dateModel.setBillingItemsModel(billingItems);
+            dateModel.setTotalBill(String.valueOf(billing.getTotalAmount()));
+
+            orderHistoryDateList.add(dateModel);
+        }
+
+        OrderHistoryModel response = new OrderHistoryModel();
+        response.setUsername(user.getUsername());
+        response.setOrderHistoryDateModel(orderHistoryDateList);
+
+        return response;
+    }
+
+//    public OrderHistoryModel getOrderHistory(String userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<Billing> billingList = billingRepository.findByUserUserId(userId);
+//
+//        List<OrderHistoryDateModel> orderHistoryDateList = new ArrayList<>();
+//
+//        for (Billing billing : billingList) {
+//            List<BillingItemsModel> billingItems = billing.getBillingItems().stream()
+//                    .map(item -> {
+//                        BillingItemsModel model = new BillingItemsModel();
+//                        model.setProductName(item.getInventory().getProductName());
+//                        model.setProductQuantity(item.getQuantity());
+//                        model.setTotalProductPrice(item.getTotalPrice());
+//                        return model;
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            OrderHistoryDateModel dateModel = new OrderHistoryDateModel();
+//            dateModel.setBillDate(billing.getBillingDate());
+//            dateModel.setBillingItemsModel(billingItems);
+//
+//            orderHistoryDateList.add(dateModel);
+//        }
+//
+//        OrderHistoryModel response = new OrderHistoryModel();
+//        response.setUsername(user.getUsername());
+//        response.setOrderHistoryDateModel(orderHistoryDateList);
+//
+//        return response;
+//    }
+
+
 }
