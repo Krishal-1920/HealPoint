@@ -15,6 +15,7 @@ public class UserModel {
     private String dateOfBirth;
     private String phoneNumber;
     private String gender;
+    private String specialist;
     private String address;
     private List<RoleModel> roles;
 
