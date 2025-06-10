@@ -17,6 +17,7 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
             "  LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(u.specialist) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  u.phone_number LIKE CONCAT('%', :search, '%')" +
             ")",
             nativeQuery = true)

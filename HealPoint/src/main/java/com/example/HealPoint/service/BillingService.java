@@ -33,12 +33,11 @@ public class BillingService {
 
 
     @Transactional
-    public BillingModel generateBill(String userId) {
+    public BillingModel generateBill(String email) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
-        List<Cart> cartItems = cartRepository.findByUserUserId(userId);
+        List<Cart> cartItems = cartRepository.findByUserUserId(user.getUserId());
         if (cartItems.isEmpty()) {
             throw new DataValidationException("Cart is empty");
         }
@@ -76,11 +75,10 @@ public class BillingService {
         return response;
     }
 
-    public OrderHistoryModel getOrderHistory(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+    public OrderHistoryModel getOrderHistory(String email) {
+        User user = userRepository.findByEmail(email);
 
-        List<Billing> billingList = billingRepository.findByUserUserId(userId);
+        List<Billing> billingList = billingRepository.findByUserUserId(user.getUserId());
 
         List<OrderHistoryDateModel> orderHistoryDateList = new ArrayList<>();
 

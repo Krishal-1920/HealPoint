@@ -40,10 +40,9 @@ public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
 
 
-    public AppointmentModel bookAnAppointment(String userId, String slotId) {
+    public AppointmentModel bookAnAppointment(String email, String slotId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
         Slots slots = slotRepository.findById(slotId)
                 .orElseThrow(() -> new DataNotFoundException("Slot not found"));
@@ -67,9 +66,8 @@ public class AppointmentService {
     }
 
 
-    public AppointmentModel updateSlot(String userId, String slotId) {
-        User user = userRepository.findById(userId)
-               .orElseThrow(() -> new DataNotFoundException("User not found"));
+    public AppointmentModel updateSlot(String email, String slotId) {
+        User user = userRepository.findByEmail(email);
 
         Slots slots = slotRepository.findById(slotId)
               .orElseThrow(() -> new DataNotFoundException("Slot not found"));
@@ -81,7 +79,7 @@ public class AppointmentService {
         slots.setStatus(Status.AVAILABLE);
         slotRepository.save(slots);
 
-        Appointment appointment = appointmentRepository.findByUserUserIdAndSlotSlotId(userId, slotId);
+        Appointment appointment = appointmentRepository.findByUserUserIdAndSlotSlotId(user.getUserId(), slotId);
 
         appointment.setStatus(BookingStatus.CANCELLED_BOOKING);
 

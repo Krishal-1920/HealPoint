@@ -28,7 +28,11 @@ public class SpringSecurity {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/users/signup", "/users/login").permitAll()
                     .requestMatchers("/role/getRoles","/users/getAllUsers", "/inventory/addProduct", "/inventory/updateProduct", "/inventory/deleteProduct").hasRole("ADMIN")
-                    .requestMatchers("/users/deleteAccount", "/users/updateProfile", "/inventory/getProduct").authenticated()
+                    .requestMatchers("/slots/createSlot", "/slots/deleteSlot", "/slots/updateSlot" ).hasRole("ADMIN")
+                    .requestMatchers("/users/deleteAccount", "/users/updateProfile", "/inventory/getProduct", "/slots/getAllSlots").authenticated()
+                    .requestMatchers("/cartItems/addToCart", "/cartItems/removeFromCart", "/cartItems/getCartItems").authenticated()
+                    .requestMatchers("/billing/generateBill", "/billing/orderHistory").authenticated()
+                    .requestMatchers("/appointment/bookAnAppointment", "/appointment/updateSlot", "/appointment/getAllBookings").authenticated()
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
