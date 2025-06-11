@@ -13,7 +13,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, String> {
 
     @Query(value = "SELECT * FROM inventory i WHERE " +
             "LOWER(i.product_name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(i.item_category) LIKE LOWER(CONCAT('%', :search, '%'))",
+            "OR LOWER(i.item_category) LIKE LOWER(CONCAT('%', :search, '%'))" +
+            "OR LOWER(i.item_description) LIKE LOWER(CONCAT('%', :search, '%'))",
             nativeQuery = true)
     List<Inventory> searchList(@Param("search") String search);
 

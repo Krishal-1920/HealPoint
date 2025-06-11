@@ -48,7 +48,7 @@ public class BillingService {
 
         List<BillingItem> billingItemsList = new ArrayList<>();
         List<BillingItemsModel> itemResponses = new ArrayList<>();
-        double totalAmount = 0;
+        double totalBillAmount = 0;
 
         for (Cart cart : cartItems) {
             BillingItem billingItem = billingMapper.updateToBillingItem(cart, billing);
@@ -56,11 +56,11 @@ public class BillingService {
 
             billingItemsList.add(billingItem);
             itemResponses.add(itemResponse);
-            totalAmount += itemResponse.getTotalProductPrice();
+            totalBillAmount += itemResponse.getTotalProductPrice();
         }
 
         billing.setBillingItems(billingItemsList);
-        billing.setTotalAmount(totalAmount);
+        billing.setTotalAmount(totalBillAmount);
         billingRepository.save(billing);
         cartRepository.deleteAll(cartItems);
 
@@ -70,7 +70,7 @@ public class BillingService {
         response.setAddress(user.getAddress());
         response.setPhoneNumber(user.getPhoneNumber());
         response.setBillingItemsModels(itemResponses);
-        response.setTotalPrice(totalAmount);
+        response.setTotalPrice(totalBillAmount);
 
         return response;
     }
@@ -84,7 +84,7 @@ public class BillingService {
 
         for (Billing billing : billingList) {
             List<BillingItemsModel> billingItems = billing.getBillingItems().stream()
-                    .map(billingItem -> billingMapper.billingItemtoBillingItemsModel(billingItem))
+                    .map(item -> billingMapper.billingItemtoBillingItemsModel(item))
                     .toList();
 
             OrderHistoryDateModel dateModel = new OrderHistoryDateModel();

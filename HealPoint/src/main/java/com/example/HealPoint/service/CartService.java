@@ -5,6 +5,7 @@ import com.example.HealPoint.entity.Inventory;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.exceptions.DataValidationException;
+import com.example.HealPoint.mapper.CartMapper;
 import com.example.HealPoint.model.CartModel;
 import com.example.HealPoint.model.ItemListModel;
 import com.example.HealPoint.model.MessageModel;
@@ -25,6 +26,8 @@ public class CartService {
     private final InventoryRepository inventoryRepository;
 
     private final CartRepository cartRepository;
+
+    private final CartMapper cartMapper;
 
     public MessageModel addToCart(String email, String itemId, double quantity) {
 
@@ -88,18 +91,35 @@ public class CartService {
 
         List<Cart> cart = cartRepository.findByUserUserId(user.getUserId());
 
-        List<ItemListModel> cartModelList = cart.stream().map(cart1 -> {
-            ItemListModel itemListModel = new ItemListModel();
-            itemListModel.setProductName(cart1.getInventory().getProductName());
-            itemListModel.setItemCategory(cart1.getInventory().getItemCategory().toString());
-            itemListModel.setItemQuantity(String.valueOf(cart1.getQuantity()));
-            itemListModel.setItemPrice(String.valueOf(cart1.getInventory().getItemPrice()));
-            return itemListModel;
-        }).toList();
+        List<ItemListModel> cartModelList = cart.stream()
+                .map(item -> cartMapper.cartToItemListModel(item))
+                .toList();
+
         CartModel cartModel = new CartModel();
         cartModel.setUsername(user.getUsername());
         cartModel.setItemListModel(cartModelList);
         return cartModel;
     }
+
+
+
+//    public CartModel getCartItems(String email) {
+//        User user = userRepository.findByEmail(email);
+//
+//        List<Cart> cart = cartRepository.findByUserUserId(user.getUserId());
+//
+//        List<ItemListModel> cartModelList = cart.stream().map(cart1 -> {
+//            ItemListModel itemListModel = new ItemListModel();
+//            itemListModel.setProductName(cart1.getInventory().getProductName());
+//            itemListModel.setItemCategory(cart1.getInventory().getItemCategory().toString());
+//            itemListModel.setItemQuantity(String.valueOf(cart1.getQuantity()));
+//            itemListModel.setItemPrice(String.valueOf(cart1.getInventory().getItemPrice()));
+//            return itemListModel;
+//        }).toList();
+//        CartModel cartModel = new CartModel();
+//        cartModel.setUsername(user.getUsername());
+//        cartModel.setItemListModel(cartModelList);
+//        return cartModel;
+//    }
 
 }
