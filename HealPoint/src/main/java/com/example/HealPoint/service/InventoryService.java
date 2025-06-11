@@ -6,6 +6,9 @@ import com.example.HealPoint.mapper.InventoryMapper;
 import com.example.HealPoint.model.InventoryModel;
 import com.example.HealPoint.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +28,15 @@ public class InventoryService {
     }
 
 
-    public List<InventoryModel> getProducts(String search) {
-        List<Inventory> inventoryList = inventoryRepository.searchList(search);
+//    public List<InventoryModel> getProducts(String search) {
+//        List<Inventory> inventoryList = inventoryRepository.searchList(search);
+//        return inventoryMapper.inventoryListToInventoryModelList(inventoryList);
+//    }
 
-        return inventoryMapper.inventoryListToInventoryModelList(inventoryList);
+    public Page<InventoryModel> getProducts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Inventory> all = inventoryRepository.findAll(pageable);
+        return all.map(item -> inventoryMapper.inventoryToInventoryModel(item));
     }
 
 

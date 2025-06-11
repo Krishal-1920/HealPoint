@@ -1,6 +1,8 @@
 package com.example.HealPoint.repository;
 
 import com.example.HealPoint.entity.Inventory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +20,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, String> {
             nativeQuery = true)
     List<Inventory> searchList(@Param("search") String search);
 
+
+    Page<Inventory> findAll(Pageable pageable);
 
 }

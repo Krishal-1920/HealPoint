@@ -4,6 +4,7 @@ import com.example.HealPoint.model.InventoryModel;
 import com.example.HealPoint.service.InventoryService;
 import com.example.HealPoint.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +26,18 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.addProduct(inventoryModel));
     }
 
+//    @GetMapping("/getProduct")
+//    public ResponseEntity<List<InventoryModel>> getProducts(@RequestHeader("Authorization") String tokenHeader,
+//                                                            @RequestParam(required = false) String search){
+//        String authenticatedEmail = jwtUtil.extractUsername(tokenHeader);
+//        return ResponseEntity.ok(inventoryService.getProducts(search));
+//    }
+
     @GetMapping("/getProduct")
-    public ResponseEntity<List<InventoryModel>> getProducts(@RequestHeader("Authorization") String tokenHeader,
-                                                            @RequestParam(required = false) String search){
-        String authenticatedEmail = jwtUtil.extractUsername(tokenHeader);
-        return ResponseEntity.ok(inventoryService.getProducts(search));
+    public ResponseEntity<Page<InventoryModel>> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(inventoryService.getProducts(page, size));
     }
 
     @PutMapping("/updateProduct")
