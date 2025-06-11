@@ -3,7 +3,6 @@ package com.example.HealPoint.service;
 import com.example.HealPoint.entity.Role;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.entity.UserRole;
-import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.RoleMapper;
 import com.example.HealPoint.mapper.UserMapper;

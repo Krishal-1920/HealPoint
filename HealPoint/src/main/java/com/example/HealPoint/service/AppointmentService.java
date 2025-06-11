@@ -31,8 +31,6 @@ public class AppointmentService {
 
     private final UserRepository userRepository;
 
-    private final SlotsMapper slotMapper;
-
     private final SlotsRepository slotRepository;
 
     private final AppointmentRepository appointmentRepository;

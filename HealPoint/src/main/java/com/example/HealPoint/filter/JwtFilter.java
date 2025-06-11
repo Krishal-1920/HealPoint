@@ -1,7 +1,6 @@
 package com.example.HealPoint.filter;
 
 import com.example.HealPoint.service.CustomUserDetailsService;
-import com.example.HealPoint.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,15 +33,11 @@ public class JwtFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         String email = null;
         String jwt = null;
-
         try {
-
             if (authHeader != null && !authHeader.isEmpty()) {
                 jwt = authHeader; // Accept raw token
                 email = jwtUtil.extractUsername(jwt);
             }
-
-
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -55,7 +50,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
             filterChain.doFilter(request, response);
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
