@@ -39,7 +39,6 @@ public class InventoryService {
         return all.map(item -> inventoryMapper.inventoryToInventoryModel(item));
     }
 
-
     public InventoryModel updateProduct(String itemId, InventoryModel inventoryModel) {
         Inventory inventory = inventoryRepository.findById(itemId)
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));
@@ -54,6 +53,6 @@ public class InventoryService {
         Inventory inventory = inventoryRepository.findById(itemId)
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));
         inventoryRepository.delete(inventory);
-        return "Product removed successfully";
+        return inventory.getItemQuantity() + " units of " + inventory.getProductName() + " removed successfully";
     }
 }

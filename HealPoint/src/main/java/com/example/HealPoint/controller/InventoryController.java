@@ -35,8 +35,8 @@ public class InventoryController {
 
     @GetMapping("/getProduct")
     public ResponseEntity<Page<InventoryModel>> getProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(inventoryService.getProducts(page, size));
     }
 
