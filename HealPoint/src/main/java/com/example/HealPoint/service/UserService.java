@@ -147,7 +147,10 @@ public class UserService {
         existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
 
-        // Fetching Role Ids from incoming model
+        // Specialist
+
+
+        // Role
         List<String> incomingRoleIdsFromModel = userModel.getRoles().stream()
                 .map(u -> u.getRoleId())
                 .distinct()
