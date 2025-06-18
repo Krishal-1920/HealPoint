@@ -2,7 +2,7 @@ package com.example.HealPoint.service;
 
 import com.example.HealPoint.entity.Slots;
 import com.example.HealPoint.entity.User;
-import com.example.HealPoint.enums.Status;
+import com.example.HealPoint.enums.BookingStatus;
 import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.mapper.SlotsMapper;
 import com.example.HealPoint.model.SlotsModel;
@@ -32,7 +32,7 @@ public class SlotsService {
 
         slot.setUser(user);
         slot.setProviderUsername(user.getUsername());
-        slot.setStatus(Status.AVAILABLE);
+        slot.setStatus(BookingStatus.AVAILABLE);
 
         slotsRepository.save(slot);
 
@@ -65,7 +65,7 @@ public class SlotsService {
 
         slots.setUser(user);
         slots.setProviderUsername(user.getUsername());
-        slots.setStatus(Status.AVAILABLE);
+        slots.setStatus(BookingStatus.AVAILABLE);
 
         Slots updatedSlots = slotsRepository.save(slots);
         return slotMapper.slotsToSlotsModel(updatedSlots);

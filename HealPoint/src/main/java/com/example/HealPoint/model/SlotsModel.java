@@ -1,6 +1,6 @@
 package com.example.HealPoint.model;
 
-import com.example.HealPoint.enums.Status;
+import com.example.HealPoint.enums.BookingStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,6 +15,6 @@ public class SlotsModel {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private Status status;
+    private BookingStatus status;
 
 }

@@ -1,6 +1,6 @@
 package com.example.HealPoint.entity;
 
-import com.example.HealPoint.enums.Status;
+import com.example.HealPoint.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,7 +28,7 @@ public class Slots {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private BookingStatus status;
 
     @Column(name = "provider_username")
     private String providerUsername;

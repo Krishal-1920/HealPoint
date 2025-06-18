@@ -4,11 +4,9 @@ import com.example.HealPoint.entity.Appointment;
 import com.example.HealPoint.entity.Slots;
 import com.example.HealPoint.entity.User;
 import com.example.HealPoint.enums.BookingStatus;
-import com.example.HealPoint.enums.Status;
 import com.example.HealPoint.exceptions.DataNotFoundException;
 import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.AppointmentMapper;
-import com.example.HealPoint.mapper.SlotsMapper;
 import com.example.HealPoint.model.AppointmentModel;
 import com.example.HealPoint.model.DateAvailableModel;
 import com.example.HealPoint.model.SlotBookingModel;
@@ -45,11 +43,11 @@ public class AppointmentService {
         Slots slots = slotRepository.findById(slotId)
                 .orElseThrow(() -> new DataNotFoundException("Slot not found"));
 
-        if (slots.getStatus() == Status.BOOKED) {
+        if (slots.getStatus() == BookingStatus.BOOKED) {
             throw new DataValidationException("Slot is already booked");
         }
 
-        slots.setStatus(Status.BOOKED);
+        slots.setStatus(BookingStatus.BOOKED);
         slotRepository.save(slots);
 
         Appointment appointment = new Appointment();
@@ -70,11 +68,11 @@ public class AppointmentService {
         Slots slots = slotRepository.findById(slotId)
               .orElseThrow(() -> new DataNotFoundException("Slot not found"));
 
-        if(slots.getStatus() == Status.AVAILABLE){
+        if(slots.getStatus().equals(BookingStatus.AVAILABLE)){
             throw new DataValidationException("Slot is already available");
         }
 
-        slots.setStatus(Status.AVAILABLE);
+        slots.setStatus(BookingStatus.AVAILABLE);
         slotRepository.save(slots);
 
         Appointment appointment = appointmentRepository.findByUserUserIdAndSlotSlotId(user.getUserId(), slotId);
