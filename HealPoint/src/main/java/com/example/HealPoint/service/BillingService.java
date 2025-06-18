@@ -9,6 +9,7 @@ import com.example.HealPoint.model.OrderHistoryDateModel;
 import com.example.HealPoint.model.OrderHistoryModel;
 import com.example.HealPoint.repository.BillingRepository;
 import com.example.HealPoint.repository.CartRepository;
+import com.example.HealPoint.repository.InventoryRepository;
 import com.example.HealPoint.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class BillingService {
 
     private final BillingMapper billingMapper;
 
+    private final InventoryRepository inventoryRepository;
 
     @Transactional
     public BillingModel generateBill(String email) {
@@ -50,6 +52,15 @@ public class BillingService {
         double totalBillAmount = 0;
 
         for (Cart cart : cartItems) {
+            Inventory inventory = inventoryRepository.findByItemId(cart.getInventory().getItemId());
+
+            if(inventory.getItemQuantity() < cart.getQuantity()){
+                throw new DataValidationException("Insufficient Data in the Inventory!!");
+            }
+
+            inventory.setItemQuantity(inventory.getItemQuantity() - cart.getQuantity());
+            inventoryRepository.save(inventory);
+
             BillingItem billingItem = billingMapper.updateToBillingItem(cart, billing);
             BillingItemsModel itemResponse = billingMapper.cartToBillingItemsModel(cart);
 

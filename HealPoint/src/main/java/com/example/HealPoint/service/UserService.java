@@ -92,6 +92,7 @@ public class UserService {
 
     public String deleteUser(String email) {
         User byEmail = userRepository.findByEmail(email);
+
         userRepository.delete(byEmail);
         return "User deleted successfully";
     }

@@ -7,6 +7,7 @@ import com.example.HealPoint.repository.UserRepository;
 import com.example.HealPoint.repository.UserRoleRepository;
 import com.example.HealPoint.service.UserService;
 import com.example.HealPoint.utils.JwtUtil;
+    import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class UserController {
     private final UserRoleRepository userRoleRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserModel> signUp(@RequestBody UserModel userModel) {
+    public ResponseEntity<UserModel> signUp(@Valid @RequestBody UserModel userModel) {
         return ResponseEntity.ok(userService.signUp(userModel));
     }
 

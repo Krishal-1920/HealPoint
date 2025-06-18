@@ -20,7 +20,6 @@ public interface UserMapper {
     @Mapping(target = "dateOfBirth", source = "dateOfBirth")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "gender", source = "gender")
-    @Mapping(target = "specialist", source = "specialist")
     @Mapping(target = "address", source = "address")
     User userModelToUser(UserModel userModel);
 
@@ -32,7 +31,6 @@ public interface UserMapper {
     @Mapping(target = "dateOfBirth", source = "dateOfBirth")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "gender", source = "gender")
-    @Mapping(target = "specialist", source = "specialist")
     @Mapping(target = "address", source = "address")
     UserModel userToUserModel(User user);
 

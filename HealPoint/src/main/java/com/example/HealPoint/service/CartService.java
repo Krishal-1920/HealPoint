@@ -36,12 +36,12 @@ public class CartService {
         Inventory inventory = inventoryRepository.findById(itemId)
                 .orElseThrow(() -> new DataNotFoundException("Item not found"));
 
-        if (quantity > inventory.getItemQuantity()) {
-            throw new DataValidationException("Quantity not available");
-        }
-
-        inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
-        inventoryRepository.save(inventory);
+//        if (quantity > inventory.getItemQuantity()) {
+//            throw new DataValidationException("Quantity not available");
+//        }
+//
+//        inventory.setItemQuantity(inventory.getItemQuantity() - quantity);
+//        inventoryRepository.save(inventory);
 
         Cart cart = cartRepository.findByUserUserIdAndInventoryItemId(user.getUserId(), itemId);
 
@@ -77,8 +77,6 @@ public class CartService {
 
         cart.setQuantity(cart.getQuantity() - quantity);
         cartRepository.save(cart);
-        inventory.setItemQuantity(inventory.getItemQuantity() + quantity);
-        inventoryRepository.save(inventory);
 
         MessageModel messageModel = new MessageModel();
         messageModel.setMessage(quantity + " " + inventory.getItemCategory().toString().toLowerCase() + " of " + inventory.getProductName() + " removed from cart");
