@@ -1,10 +1,9 @@
 package com.example.HealPoint.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -20,5 +19,10 @@ public class Specialist {
 
     @Column(name = "description")
     private String description;
+
+    //Mapping
+    @OneToMany(mappedBy = "specialist", cascade = CascadeType.ALL)
+    private List<UserSpecialist> userSpecialist;
+
 
 }

@@ -24,6 +24,7 @@ public class UserModel {
     private String gender;
     private String specialist;
     private String address;
+    private List<SpecialistModel> speciality;
     private List<RoleModel> roles;
 
 }

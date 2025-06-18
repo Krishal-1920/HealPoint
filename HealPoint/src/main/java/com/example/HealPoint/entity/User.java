@@ -55,5 +55,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Billing> billing;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserSpecialist> userSpecialist;
+
 
 }

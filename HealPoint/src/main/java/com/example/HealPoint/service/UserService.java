@@ -1,16 +1,13 @@
 package com.example.HealPoint.service;
 
-import com.example.HealPoint.entity.Role;
-import com.example.HealPoint.entity.User;
-import com.example.HealPoint.entity.UserRole;
+import com.example.HealPoint.entity.*;
 import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.RoleMapper;
 import com.example.HealPoint.mapper.UserMapper;
 import com.example.HealPoint.model.RoleModel;
+import com.example.HealPoint.model.SpecialistModel;
 import com.example.HealPoint.model.UserModel;
-import com.example.HealPoint.repository.RoleRepository;
-import com.example.HealPoint.repository.UserRepository;
-import com.example.HealPoint.repository.UserRoleRepository;
+import com.example.HealPoint.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,12 +32,45 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final SpecialistRepository specialistRepository;
+
+    private final UserSpecialistRepository userSpecialistRepository;
+
 
     public UserModel signUp(UserModel userModel) {
         User addUser = userMapper.userModelToUser(userModel);
         addUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         addUser = userRepository.save(addUser);
 
+
+        // Specialist
+        List<String> specialistIdsFromModel = userModel.getSpeciality().stream().map(s -> s.getSpecialistId()).toList();
+
+        List<Specialist> specialistInDb = specialistRepository.findAllBySpecialistIdIn(specialistIdsFromModel);
+
+        List<String> specialistIdsInDb = specialistInDb.stream().map(s -> s.getSpecialistId()).toList();
+        List<String> invalidSpecialists = new ArrayList<>();
+
+        for(String specialistId : specialistIdsFromModel){
+            if(!specialistIdsInDb.contains(specialistId)){
+                invalidSpecialists.add(specialistId);
+            }
+        }
+
+        if(!invalidSpecialists.isEmpty()){
+            throw new DataValidationException("Invalid Specialists : " + invalidSpecialists);
+        }
+
+        List<Specialist> saveSpecialists = specialistInDb.stream().filter(s -> specialistIdsFromModel.contains(s.getSpecialistId())).toList();
+
+        for(Specialist specialist : saveSpecialists){
+            UserSpecialist userSpecialist = new UserSpecialist();
+            userSpecialist.setUser(addUser);
+            userSpecialist.setSpecialist(specialist);
+            userSpecialistRepository.save(userSpecialist);
+        }
+
+        // Role
         List<String> roleIdsFromModel = userModel.getRoles().stream().map(r -> r.getRoleId()).toList();
 
         List<Role> roleInDb = roleRepository.findAllByRoleIdIn(roleIdsFromModel);
@@ -58,7 +88,7 @@ public class UserService {
             throw new DataValidationException("Invalid roles: " + invalidRoles);
         }
 
-        List<Role> saveRoles =roleInDb.stream().filter(r -> roleIdsFromModel.contains(r.getRoleId())).toList();
+        List<Role> saveRoles = roleInDb.stream().filter(r -> roleIdsFromModel.contains(r.getRoleId())).toList();
 
         for(Role role : saveRoles){
             UserRole userRole = new UserRole();
@@ -67,12 +97,21 @@ public class UserService {
             userRoleRepository.save(userRole);
         }
 
+
+        // Response
+
         UserModel userModelToReturn = userMapper.userToUserModel(addUser);
+
+        List<UserSpecialist> userSpecialist = userSpecialistRepository.findByUserUserId(addUser.getUserId());
+        List<SpecialistModel> specialistList = new ArrayList<>();
+        userSpecialist.forEach(us -> specialistList.add(userMapper.specialistToSpecialistModel(us.getSpecialist())));
+        userModelToReturn.setSpeciality(specialistList);
+
         List<UserRole> byUserUserId = userRoleRepository.findByUserUserId(addUser.getUserId());
         List<RoleModel> roleList = new ArrayList<>();
         byUserUserId.forEach(ur -> roleList.add(roleMapper.roleToRoleModel(ur.getRole())));
-
         userModelToReturn.setRoles(roleList);
+
         return userModelToReturn;
     }
 
