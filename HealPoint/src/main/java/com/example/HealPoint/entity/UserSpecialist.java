@@ -1,5 +1,6 @@
 package com.example.HealPoint.entity;
 
+import com.example.HealPoint.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,10 @@ public class UserSpecialist {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_specialist_id", updatable = false, nullable = false)
     private String userSpecialistId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status = Status.ACTIVE;
 
     // Mapping
     @ManyToOne

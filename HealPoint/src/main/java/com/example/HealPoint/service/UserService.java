@@ -1,6 +1,7 @@
 package com.example.HealPoint.service;
 
 import com.example.HealPoint.entity.*;
+import com.example.HealPoint.enums.Status;
 import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.RoleMapper;
 import com.example.HealPoint.mapper.UserMapper;
@@ -147,10 +148,52 @@ public class UserService {
         existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
 
-        // Specialist
+        // User - Specialist
+        List<String> incomingSpecialistIdsFromModel = userModel.getSpeciality().stream()
+                .map(s -> s.getSpecialistId())
+                .distinct()
+                .toList();
+
+        // Fetch valid specialists from DB
+        List<Specialist> specialistInDb = specialistRepository.findAllBySpecialistIdIn(incomingSpecialistIdsFromModel);
+        List<String> specialistIdsInDb = specialistInDb.stream()
+                .map(Specialist -> Specialist.getSpecialistId())
+                .toList();
+
+        // Validate: detect invalid specialist IDs not present in DB
+        List<String> invalidSpecialistIds = incomingSpecialistIdsFromModel.stream()
+                .filter(id -> !specialistIdsInDb.contains(id))
+                .toList();
+        if (!invalidSpecialistIds.isEmpty()) {
+            throw new DataValidationException("Invalid Specialists: " + invalidSpecialistIds);
+        }
+
+        // Fetch existing UserSpecialists
+        List<UserSpecialist> existingUserSpecialists = userSpecialistRepository.findByUserUserId(savedUser.getUserId());
+
+        statusUpdate(incomingSpecialistIdsFromModel, existingUserSpecialists);
+
+        userSpecialistRepository.saveAll(existingUserSpecialists);
+
+        // Add new specialists if not already assigned
+        List<String> existingSpecialistIds = existingUserSpecialists.stream()
+                .map(u -> u.getSpecialist().getSpecialistId())
+                .toList();
+
+        List<Specialist> newSpecialistsToAdd = specialistInDb.stream()
+                .filter(s -> !existingSpecialistIds.contains(s.getSpecialistId()))
+                .toList();
+
+        for (Specialist specialist : newSpecialistsToAdd) {
+            UserSpecialist newUserSpecialist = new UserSpecialist();
+            newUserSpecialist.setUser(savedUser);
+            newUserSpecialist.setSpecialist(specialist);
+            newUserSpecialist.setStatus(Status.ACTIVE);
+            userSpecialistRepository.save(newUserSpecialist);
+        }
 
 
-        // Role
+        // User - Role
         List<String> incomingRoleIdsFromModel = userModel.getRoles().stream()
                 .map(u -> u.getRoleId())
                 .distinct()
@@ -212,9 +255,8 @@ public class UserService {
             userRoleRepository.save(updatedUserRole);
         }
 
-        // Map to UserModel for response
+        // Response
         UserModel updatedUserModel = userMapper.userToUserModel(savedUser);
-
         // Fetch updated roles using userId (not email)
         List<UserRole> updatedUserRoles = userRoleRepository.findByUserUserId(savedUser.getUserId());
         List<RoleModel> updatedRoleModels = updatedUserRoles.stream()
@@ -222,7 +264,29 @@ public class UserService {
                 .toList();
 
         updatedUserModel.setRoles(updatedRoleModels);
+
+        // Fetch updated Specialists using userId (not email)
+        List<UserSpecialist> updatedUserSpecialists = userSpecialistRepository.findByUserUserId(savedUser.getUserId());
+        List<SpecialistModel> updatedSpecialistModels = updatedUserSpecialists.stream()
+                .filter(s -> s.getStatus() == Status.ACTIVE)
+               .map(userSpecialist -> userMapper.specialistToSpecialistModel(userSpecialist.getSpecialist()))
+               .toList();
+        updatedUserModel.setSpeciality(updatedSpecialistModels);
+
         return updatedUserModel;
+    }
+
+
+    public void statusUpdate(List<String> incomingSpecialistIdsFromModel, List<UserSpecialist> existingSpecialistInDb) {
+        for (UserSpecialist userSpecialist : existingSpecialistInDb) {
+            String specialistId = userSpecialist.getSpecialist().getSpecialistId();
+            if (!incomingSpecialistIdsFromModel.contains(specialistId)) {
+                userSpecialist.setStatus(Status.INACTIVE);
+            }
+            else {
+                userSpecialist.setStatus(Status.ACTIVE);
+            }
+        }
     }
 
 }
