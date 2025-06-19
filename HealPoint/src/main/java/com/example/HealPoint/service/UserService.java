@@ -4,6 +4,7 @@ import com.example.HealPoint.entity.*;
 import com.example.HealPoint.enums.Status;
 import com.example.HealPoint.exceptions.DataValidationException;
 import com.example.HealPoint.mapper.RoleMapper;
+import com.example.HealPoint.mapper.SpecialistMapper;
 import com.example.HealPoint.mapper.UserMapper;
 import com.example.HealPoint.model.RoleModel;
 import com.example.HealPoint.model.SpecialistModel;
@@ -36,6 +37,8 @@ public class UserService {
     private final SpecialistRepository specialistRepository;
 
     private final UserSpecialistRepository userSpecialistRepository;
+
+    private final SpecialistMapper specialistMapper;
 
 
     public UserModel signUp(UserModel userModel) {
@@ -121,6 +124,13 @@ public class UserService {
         List<User> usersList = userRepository.searchUsers(search);
         List<UserModel> userModelList = usersList.stream().map(user -> {
             UserModel userModel = userMapper.userToUserModel(user);
+            // Specialist List
+            List<UserSpecialist> userSpecialists = userSpecialistRepository.findByUserUserId(user.getUserId());
+            userSpecialists.stream()
+                    .filter(s -> s.getStatus() == Status.ACTIVE)
+                    .map(s -> specialistMapper.specialistToSpecialistModel(s.getSpecialist())).toList();
+
+            // User List
             List<UserRole> userRoles = userRoleRepository.findByUserUserId(user.getUserId());
             List<RoleModel> roleModelList = userRoles.stream().map(r -> roleMapper.roleToRoleModel(r.getRole())).toList();
             userModel.setRoles(roleModelList);
@@ -160,7 +170,7 @@ public class UserService {
                 .map(Specialist -> Specialist.getSpecialistId())
                 .toList();
 
-        // Validate: detect invalid specialist IDs not present in DB
+        // detect invalid specialist IDs not present in DB
         List<String> invalidSpecialistIds = incomingSpecialistIdsFromModel.stream()
                 .filter(id -> !specialistIdsInDb.contains(id))
                 .toList();
